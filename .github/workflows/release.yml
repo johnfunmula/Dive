@@ -114,6 +114,7 @@ jobs:
           mv release/${{ env.VERSION }}/latest-linux.yml output/
 
       - name: Verify output directory
+        shell: bash
         run: ls -al output
 
       - name: Create Release
