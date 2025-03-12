@@ -64,7 +64,9 @@ async function main() {
   } catch (error) {
     console.error("Error:", error)
     if (fs.existsSync("temp")) {
+      try {
       fs.rmSync("temp", { recursive: true, force: true })
+      } catch(e) {}
     }
     process.exit(1)
   }
