@@ -80,6 +80,7 @@ jobs:
         if: matrix.platform == 'windows'
         run: |
           npm run package:windows-installers
+          echo "Moving exe file to output directory"
           mv release/${{ env.VERSION }}/*.exe output/
           mv release/${{ env.VERSION }}/latest.yml output/
 
@@ -95,19 +96,21 @@ jobs:
           else
             npm run package:darwin-dmg:x64
           fi
+          echo "Moving dmg file to output directory"
           mv release/${{ env.VERSION }}/*.dmg output/
 
       - name: Build Linux
         if: matrix.platform == 'linux'
         run: |
           npm run package:linux
-          mv release/${{ env.VERSION }}/*.{AppImage,deb,tar.gz,zip} output/
+          echo "Moving AppImage and tar.gz files to output directory"
+          mv release/${{ env.VERSION }}/*.{AppImage,tar.gz} output/
           mv release/${{ env.VERSION }}/latest-linux.yml output/
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: output/*.{AppImage,deb,rpm,tar.gz,exe,dmg,zip,yml}
+          files: output/*.{AppImage,tar.gz,exe,dmg,yml}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
