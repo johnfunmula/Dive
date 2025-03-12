@@ -72,7 +72,9 @@ async function main() {
     }
 
     console.log("Cleaning up...")
+    try {
     fs.rmSync("temp", { recursive: true, force: true })
+    } catch(e) {}
 
     console.log(`Done! Node.js v${NODE_VERSION} has been downloaded to ./${targetDir}`)
   } catch (error) {
