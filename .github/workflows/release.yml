@@ -22,13 +22,12 @@ jobs:
           - os: ubuntu-latest
             platform: linux
             arch: x64
-    
     runs-on: ${{ matrix.os }}
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        
+
       - name: Install the Apple certificate and provisioning profile
         if: matrix.platform == 'darwin'
         env:
@@ -52,33 +51,34 @@ jobs:
           security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
           security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
           security list-keychain -d user -s $KEYCHAIN_PATH
-      
+
       - name: Get version from tag
         id: get_version
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Download Prebuilt binary
         if: matrix.platform == 'windows'
         run: npm run download:windows-bin
-      
+
       - name: Create release directory
         run: mkdir -p output
-      
+
       - name: Build Windows
         if: matrix.platform == 'windows'
         run: |
           npm run package:windows-installers
-          mv release/v${{ env.VERSION }}/*.exe output/
-      
+          mv release/${{ env.VERSION }}/*.exe output/
+          mv release/${{ env.VERSION }}/latest*.yml output/
+
       - name: Build macOS
         if: matrix.platform == 'darwin'
         env:
@@ -91,17 +91,20 @@ jobs:
           else
             npm run package:darwin-dmg:x64
           fi
-          mv release/v${{ env.VERSION }}/*.dmg output/
-      
+          mv release/${{ env.VERSION }}/*.dmg output/
+          mv release/${{ env.VERSION }}/latest*.yml output/
+
       - name: Build Linux
         if: matrix.platform == 'linux'
         run: |
           npm run package:linux
-          mv release/v${{ env.VERSION }}/*.{AppImage,deb,tar.gz,zip} output/
-      
+          mv release/${{ env.VERSION }}/*.{AppImage,deb,tar.gz,zip} output/
+          mv release/${{ env.VERSION }}/latest*.yml output/
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: output/*.{AppImage,deb,tar.gz,exe,dmg,zip}
+          files: output/*.{AppImage,deb,tar.gz,exe,dmg,zip,yml}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
