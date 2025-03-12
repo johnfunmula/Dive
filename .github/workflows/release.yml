@@ -77,7 +77,7 @@ jobs:
         run: |
           npm run package:windows-installers
           mv release/${{ env.VERSION }}/*.exe output/
-          mv release/${{ env.VERSION }}/latest*.yml output/
+          mv release/${{ env.VERSION }}/latest.yml output/
 
       - name: Build macOS
         if: matrix.platform == 'darwin'
@@ -92,19 +92,18 @@ jobs:
             npm run package:darwin-dmg:x64
           fi
           mv release/${{ env.VERSION }}/*.dmg output/
-          mv release/${{ env.VERSION }}/latest*.yml output/
 
       - name: Build Linux
         if: matrix.platform == 'linux'
         run: |
           npm run package:linux
           mv release/${{ env.VERSION }}/*.{AppImage,deb,tar.gz,zip} output/
-          mv release/${{ env.VERSION }}/latest*.yml output/
+          mv release/${{ env.VERSION }}/latest-linux.yml output/
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: output/*.{AppImage,deb,tar.gz,exe,dmg,zip,yml}
+          files: output/*.{AppImage,deb,rpm,tar.gz,exe,dmg,zip,yml}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
