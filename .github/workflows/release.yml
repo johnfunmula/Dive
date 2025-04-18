@@ -95,7 +95,7 @@ jobs:
         if: matrix.platform == 'windows'
         shell: bash
         run: |
-          npm run package:windows-installers
+          npm run package:windows
           ls -al release/${{ env.VERSION }}
           echo "Moving exe file to output directory"
           mv release/${{ env.VERSION }}/*.exe output/
