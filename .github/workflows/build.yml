@@ -53,4 +53,3 @@ jobs:
       - name: Build Release Files
         run: |
           npm run build
-          npm run build:electron
